@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #d4af37; /* Metallic Gold */
+  --color-secondary: #b8860b; /* Dark Goldenrod */
+  --color-accent: #ffdf00; /* Bright Gold */
+  --color-dark-bg: #050505;
+  --color-darker-bg: #000000;
+  --color-card-bg: rgba(15, 15, 15, 0.6);
+  --color-card-border: rgba(212, 175, 55, 0.3);
+  --color-card-border-hover: rgba(212, 175, 55, 0.8);
+  
+  --font-ancient: 'Cinzel', serif;
+  --font-modern: 'Inter', sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-[#050505] text-gray-300 font-modern;
+    /* Optional: A dark subtle texture or noise could go here */
+    background-image: radial-gradient(circle at 50% 0%, #1a1500 0%, #050505 50%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-ancient tracking-wider text-white;
+  }
+
+  input, select, textarea {
+    @apply bg-[#0a0a0a] border border-[var(--color-card-border)] text-gray-200 placeholder-gray-500 focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] outline-none rounded p-2;
+  }
+}
+
+.glass-panel {
+  @apply bg-black/40 backdrop-blur-md border border-[var(--color-card-border)] shadow-[0_0_15px_rgba(212,175,55,0.1)];
+}
+
+.premium-card {
+  @apply bg-[var(--color-card-bg)] backdrop-blur-sm border border-[var(--color-card-border)] rounded-xl overflow-hidden transition-all duration-500 hover:shadow-[0_0_25px_rgba(212,175,55,0.2)] hover:border-[var(--color-card-border-hover)] hover:-translate-y-1;
+}
+
+.btn-primary {
+  @apply relative overflow-hidden bg-transparent border border-[#d4af37] text-[#d4af37] px-8 py-3 rounded font-bold tracking-widest uppercase transition-all duration-300 hover:bg-[#d4af37] hover:text-black hover:shadow-[0_0_20px_rgba(212,175,55,0.5)];
+}
+
+.btn-secondary {
+  @apply bg-transparent border border-gray-600 text-gray-300 px-6 py-3 rounded font-bold tracking-wider uppercase transition-all duration-300 hover:border-[#d4af37] hover:text-[#d4af37];
+}
+
+.text-gold {
+  @apply text-[#d4af37] drop-shadow-[0_0_10px_rgba(212,175,55,0.3)];
+}
+
+.text-gold-gradient {
+  background: linear-gradient(to bottom, #fff8dc, #d4af37, #8b6508);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050505; 
+}
+::-webkit-scrollbar-thumb {
+  background: #332800; 
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d4af37; 
+}

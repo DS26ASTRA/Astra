@@ -22,13 +22,16 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-[#050505] pt-24 pb-20">
-      {/* Background Elements */}
+    <div className="min-h-screen relative overflow-hidden pt-24 pb-20">
+      {/* Cinematic Jungle Ruins Background */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#d4af37]/10 via-[#050505] to-[#050505] opacity-60"></div>
-        <div className="absolute bottom-0 left-0 w-3/4 h-3/4 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-[#d4af37]/5 via-[#050505] to-[#050505] opacity-60"></div>
-        {/* Subtle grid pattern for technical feel */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIwdi0yMHptLTIwIDBoMjB2MjBIMHYtMjB6bTIwLTIwaDIwdjIwSDIwdjIweiIgZmlsbD0iI2Q0YWYzNyIgZmlsbC1vcGFjaXR5PSIwLjAyIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48L3N2Zz4=')] opacity-50"></div>
+        <img
+          src="/images/jungle-ruins.jpg"
+          alt="Jungle Ruins"
+          className="w-full h-full object-cover object-center filter brightness-[0.7] contrast-105 saturate-110 scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/45 to-black/25" />
+        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#d4af37]/20 via-transparent to-transparent opacity-70"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

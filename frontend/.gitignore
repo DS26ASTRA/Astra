@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Temporary test profiles and scratch scripts
+temp_profile/
+screenshot*.png
+station_*.png
+test_cdp.py
+capture_stations.py

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate, Link } from 'react-router-dom';
+import { Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
 // Pages
@@ -37,29 +37,12 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 };
 
 const LeaderboardWrapper = () => {
-  const { role, loading } = useAuth();
-  
-  if (loading) return <div>Loading...</div>;
-  
-  if (!role) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center bg-[#050505] px-4">
-        <div className="max-w-md w-full premium-card p-10 text-center">
-          <h2 className="text-3xl font-ancient text-[#d4af37] mb-4">🏆 LIVE LEADERBOARD</h2>
-          <p className="text-gray-400 mb-8 tracking-widest uppercase text-sm">Login required to view current rankings.</p>
-          <div className="space-y-4">
-            <Link to="/team/login" className="btn-secondary w-full block">Team Login</Link>
-            <Link to="/faculty/login" className="btn-secondary w-full block">Faculty Login</Link>
-            <Link to="/admin/login" className="btn-secondary w-full block border-[#333] hover:border-gray-500 text-gray-500">Admin Login</Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
   return <Leaderboard />;
 };
 
 function App() {
+  const location = useLocation();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -101,7 +84,7 @@ function App() {
           } />
         </Routes>
       </main>
-      <Footer />
+      {location.pathname !== '/' && <Footer />}
     </div>
   );
 }

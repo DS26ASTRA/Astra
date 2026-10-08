@@ -1,172 +1,177 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Menu, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Menu, X, Volume2, VolumeX } from 'lucide-react';
+import { useState } from 'react';
+import { ancientSoundscape } from '../utils/ancientSoundscape';
 
 const Navbar = () => {
   const { role, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
+  const [isMuted, setIsMuted] = useState(false);
 
-  useEffect(() => {
-    if (location.pathname !== '/') return;
-
-    const handleScroll = () => {
-      const sections = ['home', 'event', 'about', 'timeline', 'faq'];
-      let current = 'home';
-      
-      // Check which section is in view
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 200) {
-            current = section;
-          }
-        }
-      }
-      setActiveSection(current);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    // Trigger once on mount
-    handleScroll();
-    
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [location]);
-
-  // Handle hash scrolling when coming from a different page
-  useEffect(() => {
-    if (location.pathname === '/' && location.hash) {
-      setTimeout(() => {
-        const id = location.hash.replace('#', '');
-        const element = document.getElementById(id);
-        if (element) {
-          const yOffset = -80; // Navbar height
-          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        }
-      }, 100);
-    }
-  }, [location]);
+  const toggleSound = () => {
+    const muted = ancientSoundscape.toggleMute();
+    setIsMuted(muted);
+  };
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
+  // Nav links matching reference storyboard top bar
   const navLinks = [
-    { id: 'home', label: 'Home' },
-    { id: 'event', label: 'Event' },
-    { id: 'about', label: 'About' },
-    { id: 'timeline', label: 'Timeline' },
-    { id: 'faq', label: 'FAQ' }
+    { id: 'home', label: 'Home', progress: 0.00 },
+    { id: 'about', label: 'About', progress: 0.30 },
+    { id: 'themes', label: 'Themes', progress: 0.45 },
+    { id: 'rules', label: 'Rules', progress: 0.58 },
+    { id: 'schedule', label: 'Schedule', progress: 0.70 },
+    { id: 'teams', label: 'Teams', progress: 0.85 },
+    { id: 'leaderboard', label: 'Leaderboard', progress: 0.95 },
+    { id: 'contact', label: 'Contact', progress: 1.00 }
   ];
 
-  const handleNavClick = (e, sectionId) => {
+  const handleNavClick = (e, link) => {
     setIsOpen(false);
+    ancientSoundscape.playStoneClick();
+
     if (location.pathname === '/') {
       e.preventDefault();
-      if (sectionId === 'home') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        window.history.pushState(null, '', '/');
-      } else {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          const yOffset = -80;
-          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-          window.history.pushState(null, '', `/#${sectionId}`);
-        }
-      }
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const targetY = link.progress * maxScroll;
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+    } else {
+      navigate(`/?trek=${link.progress}`);
     }
   };
 
-  const renderNavLink = (link) => {
-    const isActive = location.pathname === '/' && activeSection === link.id;
-    return (
-      <Link 
-        key={link.id}
-        to={link.id === 'home' ? '/' : `/#${link.id}`} 
-        onClick={(e) => handleNavClick(e, link.id)}
-        className={`uppercase text-[10px] tracking-[0.15em] transition-colors ${
-          isActive ? 'text-[#d4af37] font-bold border-b border-[#d4af37] pb-1' : 'text-gray-300 hover:text-[#d4af37]'
-        }`}
-      >
-        {link.label}
-      </Link>
-    );
-  };
-
-  const renderMobileNavLink = (link) => {
-    const isActive = location.pathname === '/' && activeSection === link.id;
-    return (
-      <Link 
-        key={link.id}
-        to={link.id === 'home' ? '/' : `/#${link.id}`} 
-        onClick={(e) => handleNavClick(e, link.id)}
-        className={`block px-3 py-2 rounded-md text-xs font-medium uppercase tracking-widest ${
-          isActive ? 'text-[#d4af37] bg-[#1a1a1a]' : 'text-gray-300 hover:text-[#d4af37] hover:bg-[#1a1a1a]'
-        }`}
-      >
-        {link.label}
-      </Link>
-    );
-  };
-
   return (
-    <nav className="bg-[#050505]/95 backdrop-blur-md border-b border-[var(--color-card-border)] sticky top-0 z-50 transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          <div className="flex-shrink-0">
-            <Link to="/" onClick={(e) => handleNavClick(e, 'home')} className="font-ancient text-3xl tracking-[0.2em] text-gold-gradient font-bold uppercase">ASTRA</Link>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/80 via-black/40 to-transparent backdrop-blur-[2px] transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-6 sm:px-10">
+        <div className="flex items-center justify-between h-16 sm:h-20">
+          
+          {/* Logo matching storyboard */}
+          <Link
+            to="/"
+            onClick={() => {
+              ancientSoundscape.playStoneClick();
+              if (location.pathname === '/') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="flex items-center gap-2 select-none group"
+          >
+            <span className="font-ancient text-sm text-[#ffd700]">▲</span>
+            <span className="font-ancient text-xl sm:text-2xl font-black tracking-[0.25em] text-white group-hover:text-[#ffd700] transition-colors">
+              ASTRA
+            </span>
+          </Link>
+
+          {/* Center Navigation Links matching storyboard */}
+          <div className="hidden lg:flex items-center space-x-7 xl:space-x-9">
+            {navLinks.map((link) => (
+              <button
+                key={link.id}
+                onClick={(e) => handleNavClick(e, link)}
+                className="font-ancient text-[11px] tracking-[0.2em] uppercase transition-colors text-gray-300 hover:text-[#ffd700] cursor-pointer"
+              >
+                {link.label}
+              </button>
+            ))}
           </div>
-          <div className="hidden lg:block">
-            <div className="ml-10 flex items-baseline space-x-6 items-center">
-              {navLinks.map(renderNavLink)}
-              {role && (
-                <Link to="/leaderboard" className={`uppercase text-[10px] tracking-[0.15em] transition-colors ${location.pathname === '/leaderboard' ? 'text-[#d4af37] font-bold border-b border-[#d4af37] pb-1' : 'text-gray-300 hover:text-[#d4af37]'}`}>Leaderboard</Link>
-              )}
-              
-              {!role ? (
-                <>
-                  <Link to="/register" className="bg-blue-600 hover:bg-blue-500 text-white uppercase text-[10px] font-bold tracking-[0.15em] px-5 py-2.5 rounded transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)] ml-2">Register</Link>
-                  <Link to="/login" className="btn-primary py-2 px-6 text-[10px] ml-4">Login</Link>
-                </>
-              ) : (
-                <>
-                  {role === 'TEAM' && <Link to="/team" className="text-gray-300 hover:text-[#d4af37] uppercase text-[10px] tracking-[0.15em] ml-4">Dashboard</Link>}
-                  {role === 'FACULTY' && <Link to="/faculty" className="text-gray-300 hover:text-[#d4af37] uppercase text-[10px] tracking-[0.15em] ml-4">Dashboard</Link>}
-                  {role === 'ADMIN' && <Link to="/admin" className="text-gray-300 hover:text-[#d4af37] uppercase text-[10px] tracking-[0.15em] ml-4">Dashboard</Link>}
-                  <button onClick={handleLogout} className="btn-secondary py-2 px-6 text-[10px] ml-4">Logout</button>
-                </>
-              )}
-            </div>
+
+          {/* Right Action Buttons */}
+          <div className="hidden sm:flex items-center space-x-3.5">
+            {/* Ambient Soundscape Toggle */}
+            <button
+              onClick={toggleSound}
+              title={isMuted ? "Unmute Ambient Soundscape" : "Mute Soundscape"}
+              className="p-1.5 rounded-full text-gray-400 hover:text-[#ffd700] transition-colors cursor-pointer"
+            >
+              {!isMuted ? <Volume2 size={15} /> : <VolumeX size={15} />}
+            </button>
+
+            {!role ? (
+              <div className="flex items-center space-x-5">
+                <Link
+                  to="/login"
+                  className="font-ancient text-[11px] text-[#ffd700] tracking-[0.2em] uppercase hover:text-white transition-colors"
+                >
+                  PORTAL
+                </Link>
+                <Link
+                  to="/login"
+                  className="font-ancient text-[11px] text-gray-300 tracking-[0.2em] uppercase hover:text-[#ffd700] transition-colors"
+                >
+                  LOGIN
+                </Link>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-5">
+                <Link 
+                  to={role === 'ADMIN' ? '/admin' : role === 'FACULTY' ? '/faculty' : '/team'} 
+                  className="font-ancient text-[11px] text-[#ffd700] tracking-[0.2em] uppercase hover:text-white transition-colors"
+                >
+                  PORTAL
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="font-ancient text-[11px] text-gray-300 tracking-[0.2em] uppercase hover:text-red-400 transition-colors cursor-pointer"
+                >
+                  LOGOUT
+                </button>
+              </div>
+            )}
           </div>
-          <div className="-mr-2 flex lg:hidden">
-            <button onClick={() => setIsOpen(!isOpen)} type="button" className="inline-flex items-center justify-center p-2 rounded-md text-[#d4af37] hover:text-white hover:bg-[#1a1a1a] focus:outline-none border border-[var(--color-card-border)]">
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+
+          {/* Mobile Menu Button */}
+          <div className="flex items-center sm:hidden space-x-2">
+            <button
+              onClick={toggleSound}
+              className="p-1.5 text-gray-400"
+            >
+              {!isMuted ? <Volume2 size={16} /> : <VolumeX size={16} />}
+            </button>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              type="button"
+              className="p-1.5 text-gray-300 hover:text-white"
+            >
+              {isOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
+
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      <div className={`lg:hidden overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-screen border-b border-[var(--color-card-border)]' : 'max-h-0'}`}>
-        <div className="bg-[#0a0a0a] px-2 pt-2 pb-6 space-y-1 sm:px-3 flex flex-col shadow-2xl">
-          {navLinks.map(renderMobileNavLink)}
-          {role && (
-            <Link to="/leaderboard" onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-xs font-medium uppercase tracking-widest ${location.pathname === '/leaderboard' ? 'text-[#d4af37] bg-[#1a1a1a]' : 'text-gray-300 hover:text-[#d4af37] hover:bg-[#1a1a1a]'}`}>Leaderboard</Link>
-          )}
-          {!role ? (
-            <>
-              <Link to="/login" onClick={() => setIsOpen(false)} className="block px-3 py-3 rounded-md text-xs font-medium text-[#d4af37] border border-[#d4af37]/50 text-center mt-4 uppercase tracking-widest bg-black/50">Login</Link>
-              <Link to="/register" onClick={() => setIsOpen(false)} className="block px-3 py-3 rounded-md text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white uppercase tracking-widest text-center mt-3 shadow-[0_0_15px_rgba(37,99,235,0.4)]">Register</Link>
-            </>
-          ) : (
-            <button onClick={handleLogout} className="text-left w-full block px-3 py-3 rounded-md text-xs font-medium text-[#d4af37] border border-gray-600 uppercase tracking-widest mt-4 hover:border-[#d4af37]">Logout</button>
+      {/* Mobile Drawer */}
+      <div
+        className={`lg:hidden overflow-hidden transition-all duration-300 ${
+          isOpen ? 'max-h-[400px] bg-black/90 border-b border-gray-800' : 'max-h-0'
+        }`}
+      >
+        <div className="px-6 pt-2 pb-5 space-y-2">
+          {navLinks.map((link) => (
+            <button
+              key={link.id}
+              onClick={(e) => handleNavClick(e, link)}
+              className="block w-full text-left py-1.5 font-ancient text-xs tracking-widest text-gray-300 hover:text-[#ffd700] uppercase"
+            >
+              {link.label}
+            </button>
+          ))}
+          {!role && (
+            <div className="pt-3 border-t border-gray-800">
+              <Link
+                to="/login"
+                onClick={() => setIsOpen(false)}
+                className="block text-center py-2 rounded-full border border-gray-700 font-ancient text-xs tracking-widest text-white uppercase"
+              >
+                Login
+              </Link>
+            </div>
           )}
         </div>
       </div>
